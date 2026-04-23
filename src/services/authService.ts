@@ -18,17 +18,17 @@ export interface AuthResponse {
 }
 
 export const authService = {
-  login: async (payload: LoginPayload): Promise<AuthResponse> => {
+  login: async (_payload: LoginPayload): Promise<AuthResponse> => {
     // Simulación de login
     await new Promise((resolve) => setTimeout(resolve, 1000));
     return {
-      accessToken: "mock-access-token-xyz",
-      refreshToken: "mock-refresh-token-xyz",
+      accessToken: 'mock-access-token-xyz',
+      refreshToken: 'mock-refresh-token-xyz',
       user: {
-        id: "1",
-        name: "Admin GCPE",
-        email: "admin@universitas.edu",
-        role: "admin",
+        id: '1',
+        name: 'Admin GCPE',
+        email: 'admin@universitas.edu',
+        role: 'admin',
         avatar: undefined,
       },
     };
@@ -38,8 +38,8 @@ export const authService = {
     await new Promise((resolve) => setTimeout(resolve, 500));
   },
 
-  refreshToken: async (token: string): Promise<{ accessToken: string }> => {
+  refreshToken: async (_token: string): Promise<{ accessToken: string }> => {
     await new Promise((resolve) => setTimeout(resolve, 500));
-    return { accessToken: "mock-new-access-token-xyz" };
+    return { accessToken: 'mock-new-access-token-xyz' };
   },
 };

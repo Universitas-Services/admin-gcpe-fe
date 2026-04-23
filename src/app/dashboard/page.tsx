@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Users,
@@ -7,8 +7,8 @@ import {
   ShieldCheck,
   ClipboardList,
   Ban,
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+} from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -16,11 +16,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+} from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/components/ui/chart';
 import {
   BarChart,
   Bar,
@@ -32,7 +36,7 @@ import {
   Cell,
   ResponsiveContainer,
   Label,
-} from "recharts";
+} from 'recharts';
 
 // ──────────────────────────────────────
 // Mock Data
@@ -40,87 +44,87 @@ import {
 
 const kpiCards = [
   {
-    title: "Usuarios Totales",
-    value: "24,592",
+    title: 'Usuarios Totales',
+    value: '24,592',
     icon: Users,
-    change: "+12%",
+    change: '+12%',
   },
   {
-    title: "Servidores Públicos",
-    value: "8,405",
+    title: 'Servidores Públicos',
+    value: '8,405',
     icon: Building2,
-    change: "+4%",
+    change: '+4%',
   },
   {
-    title: "Asesores Privados",
-    value: "12,130",
+    title: 'Asesores Privados',
+    value: '12,130',
     icon: Shield,
-    change: "+8%",
+    change: '+8%',
   },
   {
-    title: "Usuarios Verificados",
-    value: "22,850",
+    title: 'Usuarios Verificados',
+    value: '22,850',
     icon: ShieldCheck,
-    change: "Estable",
+    change: 'Estable',
   },
   {
-    title: "Pendientes Verificar",
-    value: "1,420",
+    title: 'Pendientes Verificar',
+    value: '1,420',
     icon: ClipboardList,
-    change: "-2%",
+    change: '-2%',
   },
   {
-    title: "Suspensiones",
-    value: "322",
+    title: 'Suspensiones',
+    value: '322',
     icon: Ban,
-    change: "-5%",
+    change: '-5%',
   },
 ];
 
 const evolutionData = [
-  { month: "Ene", users: 4200 },
-  { month: "Feb", users: 8100 },
-  { month: "Mar", users: 6500 },
-  { month: "Abr", users: 12800 },
-  { month: "May", users: 16500 },
-  { month: "Jun", users: 19200 },
+  { month: 'Ene', users: 4200 },
+  { month: 'Feb', users: 8100 },
+  { month: 'Mar', users: 6500 },
+  { month: 'Abr', users: 12800 },
+  { month: 'May', users: 16500 },
+  { month: 'Jun', users: 19200 },
 ];
 
 const distributionData = [
-  { name: "Asesores", value: 12130, fill: "#0091be" },
-  { name: "Servidores", value: 8405, fill: "#005282" },
+  { name: 'Asesores', value: 12130, fill: '#0091be' },
+  { name: 'Servidores', value: 8405, fill: '#005282' },
 ];
 
 const recentUsers = [
   {
-    id: "1",
-    name: "Ana Martínez",
-    email: "ana.m@universidad.edu",
-    initials: "AM",
-    type: "Servidor Público" as const,
+    id: '1',
+    name: 'Ana Martínez',
+    email: 'ana.m@universidad.edu',
+    initials: 'AM',
+    type: 'Servidor Público' as const,
     typeIcon: Building2,
-    status: "Activo" as const,
-    registrationDate: "15 Abr 2026",
+    status: 'Activo' as const,
+    registrationDate: '15 Abr 2026',
   },
   {
-    id: "2",
-    name: "Carlos Díaz",
-    email: "carlos.consultor@corp.com",
-    initials: "CD",
-    type: "Asesor Privado" as const,
+    id: '2',
+    name: 'Carlos Díaz',
+    email: 'carlos.consultor@corp.com',
+    initials: 'CD',
+    type: 'Asesor Privado' as const,
     typeIcon: Shield,
-    status: "Pendiente" as const,
-    registrationDate: "18 Abr 2026",
+    status: 'Pendiente' as const,
+    registrationDate: '18 Abr 2026',
   },
   {
-    id: "3",
-    name: "Laura Sánchez",
-    email: "laura.s@gobierno.gob",
-    initials: "LS",
-    type: "Servidor Público" as const,
+    id: '3',
+    name: 'Laura Sánchez',
+    email: 'laura.s@gobierno.gob',
+    initials: 'LS',
+    type: 'Servidor Público' as const,
     typeIcon: Building2,
-    status: "Activo" as const,
-    registrationDate: "20 Abr 2026",
+    status: 'Activo' as const,
+    registrationDate: '20 Abr 2026',
   },
 ];
 
@@ -130,19 +134,19 @@ const recentUsers = [
 
 const barChartConfig = {
   users: {
-    label: "Usuarios",
-    color: "#0091be",
+    label: 'Usuarios',
+    color: '#0091be',
   },
 };
 
 const pieChartConfig = {
   asesores: {
-    label: "Asesores",
-    color: "#0091be",
+    label: 'Asesores',
+    color: '#0091be',
   },
   servidores: {
-    label: "Servidores",
-    color: "#005282",
+    label: 'Servidores',
+    color: '#005282',
   },
 };
 
@@ -152,27 +156,27 @@ const pieChartConfig = {
 
 function getBadgeVariant(status: string) {
   switch (status) {
-    case "Activo":
-      return "default";
-    case "Pendiente":
-      return "secondary";
-    case "Suspendido":
-      return "destructive";
+    case 'Activo':
+      return 'default';
+    case 'Pendiente':
+      return 'secondary';
+    case 'Suspendido':
+      return 'destructive';
     default:
-      return "secondary";
+      return 'secondary';
   }
 }
 
 function getBadgeClasses(status: string) {
   switch (status) {
-    case "Activo":
-      return "bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-none";
-    case "Pendiente":
-      return "bg-amber-100 text-amber-700 hover:bg-amber-100 border-none";
-    case "Suspendido":
-      return "bg-red-100 text-red-700 hover:bg-red-100 border-none";
+    case 'Activo':
+      return 'bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-none';
+    case 'Pendiente':
+      return 'bg-amber-100 text-amber-700 hover:bg-amber-100 border-none';
+    case 'Suspendido':
+      return 'bg-red-100 text-red-700 hover:bg-red-100 border-none';
     default:
-      return "";
+      return '';
   }
 }
 
@@ -251,12 +255,12 @@ export default function DashboardPage() {
                   />
                   <XAxis
                     dataKey="month"
-                    tick={{ fontSize: 12, fill: "#9ca3af" }}
+                    tick={{ fontSize: 12, fill: '#9ca3af' }}
                     tickLine={false}
                     axisLine={false}
                   />
                   <YAxis
-                    tick={{ fontSize: 12, fill: "#9ca3af" }}
+                    tick={{ fontSize: 12, fill: '#9ca3af' }}
                     tickLine={false}
                     axisLine={false}
                     tickFormatter={(v) =>
@@ -305,11 +309,7 @@ export default function DashboardPage() {
                     ))}
                     <Label
                       content={({ viewBox }) => {
-                        if (
-                          viewBox &&
-                          "cx" in viewBox &&
-                          "cy" in viewBox
-                        ) {
+                        if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
                           return (
                             <text
                               x={viewBox.cx}

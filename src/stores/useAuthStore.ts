@@ -1,8 +1,8 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 
 interface AuthState {
   isAuthenticated: boolean;
-  status: "idle" | "loading" | "authenticated" | "unauthenticated";
+  status: 'idle' | 'loading' | 'authenticated' | 'unauthenticated';
   user: {
     id: string;
     name: string;
@@ -17,36 +17,36 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: false,
-  status: "idle",
+  status: 'idle',
   user: null,
 
-  login: async (email: string, password: string) => {
-    set({ status: "loading" });
+  login: async (email: string, _password: string) => {
+    set({ status: 'loading' });
     try {
       // TODO: Integrar con authService.login()
       await new Promise((resolve) => setTimeout(resolve, 1000));
       set({
         isAuthenticated: true,
-        status: "authenticated",
+        status: 'authenticated',
         user: {
-          id: "1",
-          name: "Admin GCPE",
-          email: email || "admin@universitas.edu",
-          role: "admin",
+          id: '1',
+          name: 'Admin GCPE',
+          email: email || 'admin@universitas.edu',
+          role: 'admin',
         },
       });
     } catch {
-      set({ status: "unauthenticated", isAuthenticated: false, user: null });
+      set({ status: 'unauthenticated', isAuthenticated: false, user: null });
     }
   },
 
   logout: async () => {
-    set({ status: "loading" });
+    set({ status: 'loading' });
     try {
       // TODO: Integrar con authService.logout()
       await new Promise((resolve) => setTimeout(resolve, 500));
     } finally {
-      set({ isAuthenticated: false, status: "unauthenticated", user: null });
+      set({ isAuthenticated: false, status: 'unauthenticated', user: null });
     }
   },
 
@@ -55,12 +55,12 @@ export const useAuthStore = create<AuthState>((set) => ({
     // Por ahora, simular usuario autenticado para desarrollo
     set({
       isAuthenticated: true,
-      status: "authenticated",
+      status: 'authenticated',
       user: {
-        id: "1",
-        name: "Admin GCPE",
-        email: "admin@universitas.edu",
-        role: "admin",
+        id: '1',
+        name: 'Admin GCPE',
+        email: 'admin@universitas.edu',
+        role: 'admin',
       },
     });
   },

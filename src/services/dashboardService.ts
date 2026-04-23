@@ -25,8 +25,8 @@ export interface RecentUser {
   name: string;
   email: string;
   avatar?: string;
-  type: "Servidor Público" | "Asesor Privado";
-  status: "Activo" | "Pendiente" | "Suspendido";
+  type: 'Servidor Público' | 'Asesor Privado';
+  status: 'Activo' | 'Pendiente' | 'Suspendido';
   registrationDate: string;
 }
 
@@ -46,20 +46,20 @@ export const dashboardService = {
   getUserEvolution: async (): Promise<ChartDataPoint[]> => {
     await new Promise((resolve) => setTimeout(resolve, 300));
     return [
-      { month: "Ene", users: 4200 },
-      { month: "Feb", users: 8100 },
-      { month: "Mar", users: 6500 },
-      { month: "Abr", users: 12800 },
-      { month: "May", users: 16500 },
-      { month: "Jun", users: 19200 },
+      { month: 'Ene', users: 4200 },
+      { month: 'Feb', users: 8100 },
+      { month: 'Mar', users: 6500 },
+      { month: 'Abr', users: 12800 },
+      { month: 'May', users: 16500 },
+      { month: 'Jun', users: 19200 },
     ];
   },
 
   getDistribution: async (): Promise<DistributionData[]> => {
     await new Promise((resolve) => setTimeout(resolve, 300));
     return [
-      { name: "Asesores", value: 12130, fill: "#0091be" },
-      { name: "Servidores", value: 8405, fill: "#005282" },
+      { name: 'Asesores', value: 12130, fill: '#0091be' },
+      { name: 'Servidores', value: 8405, fill: '#005282' },
     ];
   },
 
@@ -67,28 +67,28 @@ export const dashboardService = {
     await new Promise((resolve) => setTimeout(resolve, 300));
     return [
       {
-        id: "1",
-        name: "Ana Martínez",
-        email: "ana.m@universidad.edu",
-        type: "Servidor Público",
-        status: "Activo",
-        registrationDate: "2026-04-15",
+        id: '1',
+        name: 'Ana Martínez',
+        email: 'ana.m@universidad.edu',
+        type: 'Servidor Público',
+        status: 'Activo',
+        registrationDate: '2026-04-15',
       },
       {
-        id: "2",
-        name: "Carlos Díaz",
-        email: "carlos.consultor@corp.com",
-        type: "Asesor Privado",
-        status: "Pendiente",
-        registrationDate: "2026-04-18",
+        id: '2',
+        name: 'Carlos Díaz',
+        email: 'carlos.consultor@corp.com',
+        type: 'Asesor Privado',
+        status: 'Pendiente',
+        registrationDate: '2026-04-18',
       },
       {
-        id: "3",
-        name: "Laura Sánchez",
-        email: "laura.s@gobierno.gob",
-        type: "Servidor Público",
-        status: "Activo",
-        registrationDate: "2026-04-20",
+        id: '3',
+        name: 'Laura Sánchez',
+        email: 'laura.s@gobierno.gob',
+        type: 'Servidor Público',
+        status: 'Activo',
+        registrationDate: '2026-04-20',
       },
     ];
   },

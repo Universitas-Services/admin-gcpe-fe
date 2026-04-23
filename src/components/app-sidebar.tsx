@@ -1,15 +1,14 @@
-"use client";
+'use client';
 
-import { usePathname } from "next/navigation";
-import Link from "next/link";
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 import {
   LayoutDashboard,
   Users,
-  MessageSquare,
   ChevronUp,
   LogOut,
   Settings,
-} from "lucide-react";
+} from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -20,31 +19,26 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
+} from '@/components/ui/sidebar';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 const navItems = [
   {
-    title: "Panel de Control",
-    href: "/dashboard",
+    title: 'Panel de Control',
+    href: '/dashboard',
     icon: LayoutDashboard,
   },
   {
-    title: "Usuarios",
-    href: "/dashboard/usuarios",
+    title: 'Usuarios',
+    href: '/dashboard/usuarios',
     icon: Users,
-  },
-  {
-    title: "Mensajes",
-    href: "/dashboard/chats",
-    icon: MessageSquare,
   },
 ];
 
@@ -77,8 +71,8 @@ export function AppSidebar() {
             <SidebarMenu>
               {navItems.map((item) => {
                 const isActive =
-                  item.href === "/dashboard"
-                    ? pathname === "/dashboard"
+                  item.href === '/dashboard'
+                    ? pathname === '/dashboard'
                     : pathname.startsWith(item.href);
 
                 return (
@@ -88,13 +82,13 @@ export function AppSidebar() {
                       isActive={isActive}
                       className={`h-10 rounded-lg transition-all duration-200 ${
                         isActive
-                          ? "bg-[#0091be]/10 text-[#0091be] font-semibold"
-                          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                          ? 'bg-[#0091be]/10 text-[#0091be] font-semibold'
+                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                       }`}
                     >
                       <item.icon
                         className={`h-[18px] w-[18px] ${
-                          isActive ? "text-[#0091be]" : "text-gray-400"
+                          isActive ? 'text-[#0091be]' : 'text-gray-400'
                         }`}
                       />
                       <span className="text-[13px]">{item.title}</span>
@@ -112,29 +106,23 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
-              <DropdownMenuTrigger
-                className="flex w-full items-center gap-2 rounded-lg px-2 py-2 h-12 hover:bg-gray-50 cursor-pointer outline-none"
-              >
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-[#0091be] text-white text-xs font-semibold">
-                      AG
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col flex-1 text-left">
-                    <span className="text-[13px] font-semibold text-gray-900">
-                      Admin GCPE
-                    </span>
-                    <span className="text-[11px] text-muted-foreground">
-                      admin@universitas.edu
-                    </span>
-                  </div>
-                  <ChevronUp className="h-4 w-4 text-gray-400" />
+              <DropdownMenuTrigger className="flex w-full items-center gap-2 rounded-lg px-2 py-2 h-12 hover:bg-gray-50 cursor-pointer outline-none">
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback className="bg-[#0091be] text-white text-xs font-semibold">
+                    AG
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col flex-1 text-left">
+                  <span className="text-[13px] font-semibold text-gray-900">
+                    Admin GCPE
+                  </span>
+                  <span className="text-[11px] text-muted-foreground">
+                    admin@universitas.edu
+                  </span>
+                </div>
+                <ChevronUp className="h-4 w-4 text-gray-400" />
               </DropdownMenuTrigger>
-              <DropdownMenuContent
-                side="top"
-                className="w-56"
-                align="start"
-              >
+              <DropdownMenuContent side="top" className="w-56" align="start">
                 <DropdownMenuItem className="cursor-pointer">
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Ajustes</span>
