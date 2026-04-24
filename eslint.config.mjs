@@ -1,0 +1,29 @@
+import { defineConfig, globalIgnores } from 'eslint/config';
+import nextVitals from 'eslint-config-next/core-web-vitals';
+import nextTs from 'eslint-config-next/typescript';
+import eslintConfigPrettier from 'eslint-config-prettier';
+import eslintPluginPrettier from 'eslint-plugin-prettier/recommended';
+
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
+  eslintConfigPrettier,
+  eslintPluginPrettier,
+  {
+    rules: {
+      'prettier/prettier': 'error',
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+    },
+  },
+  globalIgnores(['.next/**', 'out/**', 'build/**', 'next-env.d.ts']),
+]);
+
+export default eslintConfig;
