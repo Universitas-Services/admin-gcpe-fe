@@ -28,6 +28,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { toast } from 'sonner';
 
 const navItems = [
   {
@@ -39,11 +40,19 @@ const navItems = [
     title: 'Usuarios',
     href: '/dashboard/usuarios',
     icon: Users,
+    isUnderConstruction: true,
   },
 ];
 
 export function AppSidebar() {
   const pathname = usePathname();
+
+  const handleUnderConstruction = () => {
+    toast.info('Página en construcción', {
+      description: 'Este módulo estará disponible próximamente.',
+      duration: 3000,
+    });
+  };
 
   return (
     <Sidebar className="border-r border-sidebar-border bg-white">
@@ -77,22 +86,33 @@ export function AppSidebar() {
 
                 return (
                   <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton
-                      render={<Link href={item.href} />}
-                      isActive={isActive}
-                      className={`h-10 rounded-lg transition-all duration-200 ${
-                        isActive
-                          ? 'bg-[#0091be]/10 text-[#0091be] font-semibold'
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                      }`}
-                    >
-                      <item.icon
-                        className={`h-[18px] w-[18px] ${
-                          isActive ? 'text-[#0091be]' : 'text-gray-400'
+                    {item.isUnderConstruction ? (
+                      <SidebarMenuButton
+                        onClick={handleUnderConstruction}
+                        isActive={isActive}
+                        className={`h-10 rounded-lg transition-all duration-200 text-gray-600 hover:bg-gray-50 hover:text-gray-900`}
+                      >
+                        <item.icon className="h-[18px] w-[18px] text-gray-400" />
+                        <span className="text-[13px]">{item.title}</span>
+                      </SidebarMenuButton>
+                    ) : (
+                      <SidebarMenuButton
+                        render={<Link href={item.href} />}
+                        isActive={isActive}
+                        className={`h-10 rounded-lg transition-all duration-200 ${
+                          isActive
+                            ? 'bg-[#0091be]/10 text-[#0091be] font-semibold'
+                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                         }`}
-                      />
-                      <span className="text-[13px]">{item.title}</span>
-                    </SidebarMenuButton>
+                      >
+                        <item.icon
+                          className={`h-[18px] w-[18px] ${
+                            isActive ? 'text-[#0091be]' : 'text-gray-400'
+                          }`}
+                        />
+                        <span className="text-[13px]">{item.title}</span>
+                      </SidebarMenuButton>
+                    )}
                   </SidebarMenuItem>
                 );
               })}

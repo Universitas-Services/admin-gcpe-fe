@@ -1,12 +1,16 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import {
   Users,
   Building2,
-  Shield,
   ShieldCheck,
-  ClipboardList,
-  Ban,
+  FileText,
+  UserCog,
+  Briefcase,
+  PieChart as PieChartIcon,
+  BarChart3,
+  TrendingUp,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -20,6 +24,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { toast } from 'sonner';
 import {
   ChartContainer,
   ChartTooltip,
@@ -36,159 +41,68 @@ import {
   Cell,
   ResponsiveContainer,
   Label,
+  LineChart,
+  Line,
 } from 'recharts';
-
-// ──────────────────────────────────────
-// Mock Data
-// ──────────────────────────────────────
-
-const kpiCards = [
-  {
-    title: 'Usuarios Totales',
-    value: '24,592',
-    icon: Users,
-    change: '+12%',
-  },
-  {
-    title: 'Servidores Públicos',
-    value: '8,405',
-    icon: Building2,
-    change: '+4%',
-  },
-  {
-    title: 'Asesores Privados',
-    value: '12,130',
-    icon: Shield,
-    change: '+8%',
-  },
-  {
-    title: 'Usuarios Verificados',
-    value: '22,850',
-    icon: ShieldCheck,
-    change: 'Estable',
-  },
-  {
-    title: 'Pendientes Verificar',
-    value: '1,420',
-    icon: ClipboardList,
-    change: '-2%',
-  },
-  {
-    title: 'Suspensiones',
-    value: '322',
-    icon: Ban,
-    change: '-5%',
-  },
-];
-
-const evolutionData = [
-  { month: 'Ene', users: 4200 },
-  { month: 'Feb', users: 8100 },
-  { month: 'Mar', users: 6500 },
-  { month: 'Abr', users: 12800 },
-  { month: 'May', users: 16500 },
-  { month: 'Jun', users: 19200 },
-];
-
-const distributionData = [
-  { name: 'Asesores', value: 12130, fill: '#0091be' },
-  { name: 'Servidores', value: 8405, fill: '#005282' },
-];
-
-const recentUsers = [
-  {
-    id: '1',
-    name: 'Ana Martínez',
-    email: 'ana.m@universidad.edu',
-    initials: 'AM',
-    type: 'Servidor Público' as const,
-    typeIcon: Building2,
-    status: 'Activo' as const,
-    registrationDate: '15 Abr 2026',
-  },
-  {
-    id: '2',
-    name: 'Carlos Díaz',
-    email: 'carlos.consultor@corp.com',
-    initials: 'CD',
-    type: 'Asesor Privado' as const,
-    typeIcon: Shield,
-    status: 'Pendiente' as const,
-    registrationDate: '18 Abr 2026',
-  },
-  {
-    id: '3',
-    name: 'Laura Sánchez',
-    email: 'laura.s@gobierno.gob',
-    initials: 'LS',
-    type: 'Servidor Público' as const,
-    typeIcon: Building2,
-    status: 'Activo' as const,
-    registrationDate: '20 Abr 2026',
-  },
-];
-
-// ──────────────────────────────────────
-// Chart Configs
-// ──────────────────────────────────────
-
-const barChartConfig = {
-  users: {
-    label: 'Usuarios',
-    color: '#0091be',
-  },
-};
-
-const pieChartConfig = {
-  asesores: {
-    label: 'Asesores',
-    color: '#0091be',
-  },
-  servidores: {
-    label: 'Servidores',
-    color: '#005282',
-  },
-};
-
-// ──────────────────────────────────────
-// Helpers
-// ──────────────────────────────────────
-
-function getBadgeVariant(status: string) {
-  switch (status) {
-    case 'Activo':
-      return 'default';
-    case 'Pendiente':
-      return 'secondary';
-    case 'Suspendido':
-      return 'destructive';
-    default:
-      return 'secondary';
-  }
-}
-
-function getBadgeClasses(status: string) {
-  switch (status) {
-    case 'Activo':
-      return 'bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-none';
-    case 'Pendiente':
-      return 'bg-amber-100 text-amber-700 hover:bg-amber-100 border-none';
-    case 'Suspendido':
-      return 'bg-red-100 text-red-700 hover:bg-red-100 border-none';
-    default:
-      return '';
-  }
-}
-
-// ──────────────────────────────────────
-// Page Component
-// ──────────────────────────────────────
+import {
+  dashboardService,
+  DashboardMetrics,
+} from '@/services/dashboardService';
 
 export default function DashboardPage() {
-  const totalDistribution = distributionData.reduce(
-    (sum, d) => sum + d.value,
-    0
-  );
+  const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
+
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      const data = await dashboardService.getMetrics();
+      setMetrics(data);
+    };
+    fetchMetrics();
+  }, []);
+
+  if (!metrics) {
+    return (
+      <div className="flex h-full items-center justify-center p-8 text-muted-foreground">
+        Cargando métricas...
+      </div>
+    );
+  }
+
+  // --- Transform Data for Charts ---
+  const pieData = [
+    {
+      name: 'Bienes',
+      value: metrics.specialtyBreakdown.bienes,
+      fill: '#0091be',
+    },
+    {
+      name: 'Servicios',
+      value: metrics.specialtyBreakdown.servicios,
+      fill: '#005282',
+    },
+    { name: 'Obras', value: metrics.specialtyBreakdown.obras, fill: '#38bdf8' },
+  ];
+  const totalPie = pieData.reduce((sum, d) => sum + d.value, 0);
+
+  const barData = [
+    { name: 'ALTA', value: metrics.contractLevel.alta },
+    { name: 'MEDIA', value: metrics.contractLevel.media },
+    { name: 'BAJA', value: metrics.contractLevel.baja },
+  ];
+
+  const pieChartConfig = {
+    bienes: { label: 'Bienes', color: '#0091be' },
+    servicios: { label: 'Servicios', color: '#005282' },
+    obras: { label: 'Obras', color: '#38bdf8' },
+  };
+
+  const barChartConfig = {
+    value: { label: 'Nivel', color: '#005282' },
+  };
+
+  const lineChartConfig = {
+    users: { label: 'Usuarios', color: '#0091be' },
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -197,56 +111,183 @@ export default function DashboardPage() {
         <h1 className="text-3xl font-bold text-[#005282]">
           Panel Administrativo
         </h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Métricas avanzadas y análisis de crecimiento.
+        <p className="mt-1 text-sm text-muted-foreground">
+          Métricas avanzadas de proveedores, auditorías y gestión de usuarios.
         </p>
       </div>
 
-      {/* ── Fila 2: KPI Cards ── */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        {kpiCards.map((kpi) => (
-          <Card
-            key={kpi.title}
-            className="border-none shadow-sm bg-white hover:shadow-md transition-shadow duration-200"
-          >
-            <CardContent className="p-5">
-              <div className="flex items-start justify-between">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0091be]/10">
-                  <kpi.icon className="h-5 w-5 text-[#0091be]" />
-                </div>
-                <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-600">
-                  {kpi.change}
-                </span>
+      {/* ── Sección A: Métricas Generales (Grid de KPIs) ── */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <Card className="border-none shadow-sm bg-white rounded-xl">
+          <CardContent className="p-5">
+            <div className="flex items-start justify-between">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0091be]/10">
+                <Users className="h-5 w-5 text-[#0091be]" />
               </div>
-              <div className="mt-4">
-                <p className="text-2xl font-bold text-gray-900">{kpi.value}</p>
-                <p className="text-[13px] font-bold text-[#005282]">
-                  {kpi.title}
-                </p>
+            </div>
+            <div className="mt-4">
+              <p className="text-2xl font-bold text-gray-900">
+                {metrics.kpis.totalUsers}
+              </p>
+              <p className="text-[13px] font-bold text-[#005282]">
+                Total Usuarios
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-none shadow-sm bg-white rounded-xl">
+          <CardContent className="p-5">
+            <div className="flex items-start justify-between">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#005282]/10">
+                <Building2 className="h-5 w-5 text-[#005282]" />
               </div>
-            </CardContent>
-          </Card>
-        ))}
+            </div>
+            <div className="mt-4">
+              <p className="text-2xl font-bold text-gray-900">
+                {metrics.kpis.totalProviders}
+              </p>
+              <p className="text-[13px] font-bold text-[#005282]">
+                Total Proveedores
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-none shadow-sm bg-white rounded-xl">
+          <CardContent className="p-5">
+            <div className="flex items-start justify-between">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0091be]/10">
+                <ShieldCheck className="h-5 w-5 text-[#0091be]" />
+              </div>
+            </div>
+            <div className="mt-4">
+              <p className="text-2xl font-bold text-gray-900">
+                {metrics.kpis.usersWithCompliance}
+              </p>
+              <p className="text-[13px] font-bold text-[#005282]">
+                Auditorías Compliance
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-none shadow-sm bg-white rounded-xl">
+          <CardContent className="p-5">
+            <div className="flex items-start justify-between">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0091be]/10">
+                <UserCog className="h-5 w-5 text-[#0091be]" />
+              </div>
+            </div>
+            <div className="mt-4">
+              <p className="text-2xl font-bold text-gray-900">
+                {metrics.kpis.usersWithManual}
+              </p>
+              <p className="text-[13px] font-bold text-[#005282]">
+                Generación de Manuales
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* ── Fila 3: Gráficos ── */}
-      <div className="grid grid-cols-10 gap-4">
-        {/* Bar Chart — Evolución de Usuarios */}
-        <Card className="col-span-10 lg:col-span-7 border-none shadow-sm bg-white">
-          <CardHeader className="pb-2">
+      {/* ── Sección B: Visualización de Datos (Gráficos) ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Donut Chart: Área de Especialidad */}
+        <Card className="border-none shadow-sm bg-white rounded-xl">
+          <CardHeader className="pb-2 flex flex-row items-center gap-2">
+            <PieChartIcon className="h-5 w-5 text-[#0091be]" />
             <CardTitle className="text-base font-semibold text-gray-900">
-              Evolución de Usuarios
+              Área de Especialidad
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
             <ChartContainer
-              config={barChartConfig}
-              className="h-[280px] w-full"
+              config={pieChartConfig}
+              className="h-[220px] w-full"
             >
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={evolutionData}
-                  margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
+                <PieChart>
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Pie
+                    data={pieData}
+                    dataKey="value"
+                    nameKey="name"
+                    innerRadius={60}
+                    outerRadius={85}
+                    strokeWidth={2}
+                    stroke="#ffffff"
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                    <Label
+                      content={({ viewBox }) => {
+                        if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
+                          return (
+                            <text
+                              x={viewBox.cx}
+                              y={viewBox.cy}
+                              textAnchor="middle"
+                              dominantBaseline="middle"
+                            >
+                              <tspan
+                                x={viewBox.cx}
+                                y={(viewBox.cy || 0) - 6}
+                                className="fill-gray-900 text-xl font-bold"
+                              >
+                                {(totalPie / 1000).toFixed(1)}k
+                              </tspan>
+                              <tspan
+                                x={viewBox.cx}
+                                y={(viewBox.cy || 0) + 14}
+                                className="fill-gray-500 text-xs"
+                              >
+                                Total
+                              </tspan>
+                            </text>
+                          );
+                        }
+                      }}
+                    />
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+            <div className="mt-2 flex items-center justify-center gap-4">
+              {pieData.map((entry) => (
+                <div
+                  key={entry.name}
+                  className="flex items-center gap-2 text-xs text-muted-foreground"
+                >
+                  <span
+                    className="inline-block h-3 w-3 rounded-sm"
+                    style={{ backgroundColor: entry.fill }}
+                  />
+                  {entry.name}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Line Chart: Actividad Reciente */}
+        <Card className="border-none shadow-sm bg-white rounded-xl">
+          <CardHeader className="pb-2 flex flex-row items-center gap-2">
+            <TrendingUp className="h-5 w-5 text-[#0091be]" />
+            <CardTitle className="text-base font-semibold text-gray-900">
+              Usuarios nuevos registrados
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <ChartContainer
+              config={lineChartConfig}
+              className="h-[220px] w-full mt-4"
+            >
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart
+                  data={metrics.userGrowth}
+                  margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
                 >
                   <CartesianGrid
                     strokeDasharray="3 3"
@@ -268,188 +309,230 @@ export default function DashboardPage() {
                     }
                   />
                   <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar
+                  <Line
+                    type="monotone"
                     dataKey="users"
-                    fill="#0091be"
-                    radius={[6, 6, 0, 0]}
-                    maxBarSize={48}
+                    stroke="#0091be"
+                    strokeWidth={3}
+                    dot={{ r: 4, fill: '#0091be' }}
                   />
-                </BarChart>
+                </LineChart>
               </ResponsiveContainer>
             </ChartContainer>
-          </CardContent>
-        </Card>
-
-        {/* Pie Chart — Distribución */}
-        <Card className="col-span-10 lg:col-span-3 border-none shadow-sm bg-white">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-semibold text-gray-900">
-              Distribución
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <ChartContainer
-              config={pieChartConfig}
-              className="h-[220px] w-full"
-            >
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Pie
-                    data={distributionData}
-                    dataKey="value"
-                    nameKey="name"
-                    innerRadius={60}
-                    outerRadius={85}
-                    strokeWidth={2}
-                    stroke="#ffffff"
-                  >
-                    {distributionData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.fill} />
-                    ))}
-                    <Label
-                      content={({ viewBox }) => {
-                        if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
-                          return (
-                            <text
-                              x={viewBox.cx}
-                              y={viewBox.cy}
-                              textAnchor="middle"
-                              dominantBaseline="middle"
-                            >
-                              <tspan
-                                x={viewBox.cx}
-                                y={(viewBox.cy || 0) - 6}
-                                className="fill-gray-900 text-xl font-bold"
-                              >
-                                {(totalDistribution / 1000).toFixed(0)}k
-                              </tspan>
-                              <tspan
-                                x={viewBox.cx}
-                                y={(viewBox.cy || 0) + 14}
-                                className="fill-gray-500 text-xs"
-                              >
-                                Activos
-                              </tspan>
-                            </text>
-                          );
-                        }
-                      }}
-                    />
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
-            </ChartContainer>
-
-            {/* Leyenda */}
-            <div className="mt-2 flex items-center justify-center gap-6">
-              {distributionData.map((entry) => (
-                <div
-                  key={entry.name}
-                  className="flex items-center gap-2 text-xs text-gray-600"
-                >
-                  <span
-                    className="inline-block h-3 w-3 rounded-sm"
-                    style={{ backgroundColor: entry.fill }}
-                  />
-                  {entry.name}
-                </div>
-              ))}
-            </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* ── Fila 4: Tabla de Usuarios Recientes ── */}
-      <Card className="border-none shadow-sm bg-white">
-        <CardHeader>
-          <CardTitle className="text-base font-semibold text-gray-900">
-            Usuarios Recientes
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow className="border-b border-gray-100 hover:bg-transparent">
-                <TableHead className="text-xs font-medium uppercase text-gray-500">
-                  Usuario
-                </TableHead>
-                <TableHead className="text-xs font-medium uppercase text-gray-500">
-                  Tipo
-                </TableHead>
-                <TableHead className="text-xs font-medium uppercase text-gray-500">
-                  Estado
-                </TableHead>
-                <TableHead className="text-xs font-medium uppercase text-gray-500">
-                  Fecha de Registro
-                </TableHead>
-                <TableHead className="text-xs font-medium uppercase text-gray-500 text-right">
-                  Acción
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {recentUsers.map((user) => (
-                <TableRow
-                  key={user.id}
-                  className="border-b border-gray-50 hover:bg-gray-50/50"
-                >
-                  {/* Nombre + Avatar */}
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-9 w-9">
-                        <AvatarFallback className="bg-[#0091be]/10 text-[#0091be] text-xs font-semibold">
-                          {user.initials}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">
-                          {user.name}
-                        </p>
-                        <p className="text-xs text-gray-500">{user.email}</p>
-                      </div>
-                    </div>
-                  </TableCell>
-
-                  {/* Tipo de usuario */}
-                  <TableCell>
-                    <div className="flex items-center gap-2 text-sm text-gray-700">
-                      <user.typeIcon className="h-4 w-4 text-gray-400" />
-                      {user.type}
-                    </div>
-                  </TableCell>
-
-                  {/* Estado */}
-                  <TableCell>
-                    <Badge
-                      variant={getBadgeVariant(user.status)}
-                      className={`text-xs font-medium ${getBadgeClasses(user.status)}`}
-                    >
-                      {user.status}
-                    </Badge>
-                  </TableCell>
-
-                  {/* Fecha */}
-                  <TableCell className="text-sm text-gray-600">
-                    {user.registrationDate}
-                  </TableCell>
-
-                  {/* Acción */}
-                  <TableCell className="text-right">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-xs border-gray-200 text-gray-600 hover:text-[#0091be] hover:border-[#0091be] transition-colors cursor-pointer"
-                    >
-                      Ver detalles
-                    </Button>
-                  </TableCell>
+      {/* ── Sección C: Tablas de Gestión (Control de Listados) ── */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+        {/* Tabla 1: Gestión de Usuarios */}
+        <Card className="border-none shadow-sm bg-white rounded-xl">
+          <CardHeader>
+            <CardTitle className="text-base font-semibold text-gray-900">
+              Gestión de Usuarios
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow className="border-b border-gray-100 hover:bg-transparent">
+                  <TableHead className="text-xs font-medium uppercase text-muted-foreground">
+                    Usuario
+                  </TableHead>
+                  <TableHead className="text-xs font-medium uppercase text-muted-foreground">
+                    Email
+                  </TableHead>
+                  <TableHead className="text-xs font-medium uppercase text-muted-foreground">
+                    Cargo
+                  </TableHead>
+                  <TableHead className="text-xs font-medium uppercase text-muted-foreground">
+                    Institución
+                  </TableHead>
+                  <TableHead className="text-xs font-medium uppercase text-muted-foreground text-right">
+                    Acción
+                  </TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+              </TableHeader>
+              <TableBody>
+                {metrics.recentUsers.map((user) => (
+                  <TableRow
+                    key={user.id}
+                    className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors"
+                  >
+                    <TableCell className="text-sm font-medium text-gray-900">
+                      {user.name}
+                    </TableCell>
+                    <TableCell className="text-sm text-gray-600">
+                      {user.email}
+                    </TableCell>
+                    <TableCell className="text-sm text-gray-600">
+                      {user.cargo}
+                    </TableCell>
+                    <TableCell className="text-sm text-gray-600 truncate max-w-[120px]">
+                      {user.institucion}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          toast.info('Página en construcción', {
+                            description:
+                              'Gestión de usuarios disponible próximamente.',
+                          })
+                        }
+                        className="text-xs border-gray-200 text-gray-600 hover:text-[#0091be] hover:border-[#0091be] transition-colors"
+                      >
+                        Ver
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+
+        {/* Tabla 2: Monitor de Proveedores */}
+        <Card className="border-none shadow-sm bg-white rounded-xl">
+          <CardHeader>
+            <CardTitle className="text-base font-semibold text-gray-900">
+              Monitor de Proveedores
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow className="border-b border-gray-100 hover:bg-transparent">
+                  <TableHead className="text-xs font-medium uppercase text-muted-foreground">
+                    RIF
+                  </TableHead>
+                  <TableHead className="text-xs font-medium uppercase text-muted-foreground">
+                    Razón Social
+                  </TableHead>
+                  <TableHead className="text-xs font-medium uppercase text-muted-foreground">
+                    Nivel
+                  </TableHead>
+                  <TableHead className="text-xs font-medium uppercase text-muted-foreground">
+                    Estado
+                  </TableHead>
+                  <TableHead className="text-xs font-medium uppercase text-muted-foreground text-right">
+                    Acción
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {metrics.recentProviders.map((prov) => (
+                  <TableRow
+                    key={prov.id}
+                    className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors"
+                  >
+                    <TableCell className="text-sm font-medium text-gray-900">
+                      {prov.rif}
+                    </TableCell>
+                    <TableCell className="text-sm text-gray-600 truncate max-w-[150px]">
+                      {prov.razonSocial}
+                    </TableCell>
+                    <TableCell className="text-sm text-gray-600">
+                      {prov.nivel}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        className={`text-xs font-medium border-none ${prov.status === 'Activo' ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-100' : 'bg-red-100 text-red-700 hover:bg-red-100'}`}
+                      >
+                        {prov.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          toast.info('Página en construcción', {
+                            description:
+                              'Monitor de proveedores disponible próximamente.',
+                          })
+                        }
+                        className="text-xs border-gray-200 text-gray-600 hover:text-[#0091be] hover:border-[#0091be] transition-colors"
+                      >
+                        Ver
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+
+        {/* Tabla 3: Últimas Auditorías (Toma el ancho completo abajo) */}
+        <Card className="border-none shadow-sm bg-white rounded-xl xl:col-span-2">
+          <CardHeader>
+            <CardTitle className="text-base font-semibold text-gray-900">
+              Últimas Auditorías
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow className="border-b border-gray-100 hover:bg-transparent">
+                  <TableHead className="text-xs font-medium uppercase text-muted-foreground">
+                    Nomenclatura
+                  </TableHead>
+                  <TableHead className="text-xs font-medium uppercase text-muted-foreground">
+                    Órgano / Entidad
+                  </TableHead>
+                  <TableHead className="text-xs font-medium uppercase text-muted-foreground">
+                    Fecha
+                  </TableHead>
+                  <TableHead className="text-xs font-medium uppercase text-muted-foreground">
+                    Elaborado Por
+                  </TableHead>
+                  <TableHead className="text-xs font-medium uppercase text-muted-foreground text-right">
+                    Acción
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {metrics.latestAudits.map((audit) => (
+                  <TableRow
+                    key={audit.id}
+                    className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors"
+                  >
+                    <TableCell className="text-sm font-medium text-gray-900">
+                      {audit.nomenclatura}
+                    </TableCell>
+                    <TableCell className="text-sm text-gray-600">
+                      {audit.entidad}
+                    </TableCell>
+                    <TableCell className="text-sm text-gray-600">
+                      {audit.fecha}
+                    </TableCell>
+                    <TableCell className="text-sm text-gray-600">
+                      {audit.autor}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          toast.info('Página en construcción', {
+                            description:
+                              'Detalles de auditoría disponibles próximamente.',
+                          })
+                        }
+                        className="text-xs border-gray-200 text-gray-600 hover:text-[#0091be] hover:border-[#0091be] transition-colors"
+                      >
+                        Ver
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
